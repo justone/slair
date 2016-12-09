@@ -1,0 +1,2 @@
+# slair
+Slack + Flair
