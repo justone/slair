@@ -39,4 +39,4 @@ slair -t xoxp-zzzzzzzzzz-zzzzzzzzzz-zzzzzzzzzzz-zzzzzzzzzz -f Jim -l Bob -o Jame
 Possible values for `-p` are:
 
 * 'single': a single emoji picked from a list
-* '3pal': three emojis in a palindrome (e.g. 💥☁️ 💥)
+* '3pal': three emojis in a palindrome (e.g. 💥☁️💥)
