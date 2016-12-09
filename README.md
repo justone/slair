@@ -2,6 +2,14 @@
 
 This is a small program that helps me keep my Slack profile name in line.
 
+My corp Slack profile is reset to my full name every time I log in, so I got
+into the habit of changing it to my nickname every day.  Then, for fun,
+I started adding [emoji flair](http://emojipedia.org/) on the end.  Well, that
+didn't last long before I thought about automating the name-fixing and
+flair-adding.
+
+This repo is the result.
+
 # Install
 
 ```
@@ -48,3 +56,7 @@ Possible values for `-p` are:
 
 * 'single': a single emoji picked from a list
 * '3pal': three emojis in a palindrome (e.g. 💥☁️💥)
+
+# License
+
+MIT
