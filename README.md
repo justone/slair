@@ -10,32 +10,38 @@ go get github.com/justone/slair
 
 # Example usage
 
-(alternatively, the slack token can be set as an env variable SLACK_TOKEN)
+Set Slack token via environment variable:
+
+```
+export SLACK_TOKEN=xoxp-zzzzzzzzzz-zzzzzzzzzz-zzzzzzzzzzz-zzzzzzzzzz
+```
+
+Alternatively, the slack token can be passed as an argument (`-t`).
 
 Change your profile name (supports utf8 emoji):
 
 ```
-slair -t xoxp-zzzzzzzzzz-zzzzzzzzzz-zzzzzzzzzzz-zzzzzzzzzz -f Jim -l Bob
-slair -t xoxp-zzzzzzzzzz-zzzzzzzzzz-zzzzzzzzzzz-zzzzzzzzzz -f Jim -l "Bob ☁️"
+slair -f Jim -l Bob
+slair -f Jim -l "Bob ☁️"
 ```
 
 Set name only if a certain old name is found:
 
 ```
-slair -t xoxp-zzzzzzzzzz-zzzzzzzzzz-zzzzzzzzzzz-zzzzzzzzzz -f Jim -l Bob -o James
+slair -f Jim -l Bob -o James
 ```
 
 Continuously correct the name every N minutes:
 
 ```
-slair -t xoxp-zzzzzzzzzz-zzzzzzzzzz-zzzzzzzzzzz-zzzzzzzzzz -f Jim -l Bob -o James -c 15
+slair -f Jim -l Bob -o James -c 15
 ```
 
 Append some flair at the end:
 
 ```
-slair -t xoxp-zzzzzzzzzz-zzzzzzzzzz-zzzzzzzzzzz-zzzzzzzzzz -f Jim -l Bob -c 15 -p single
-slair -t xoxp-zzzzzzzzzz-zzzzzzzzzz-zzzzzzzzzzz-zzzzzzzzzz -f Jim -l Bob -o James -c 15 -p 3pal
+slair -f Jim -l Bob -c 15 -p single
+slair -f Jim -l Bob -o James -c 15 -p 3pal
 ```
 
 Possible values for `-p` are:
