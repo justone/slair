@@ -27,6 +27,7 @@ var emojis = []string{
 	"💥",
 	"🎉",
 	"😎",
+	"🕴",
 }
 
 var changer Changer
