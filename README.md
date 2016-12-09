@@ -10,6 +10,8 @@ go get github.com/justone/slair
 
 # Example usage
 
+(alternatively, the slack token can be set as an env variable SLACK_TOKEN)
+
 Change your profile name (supports utf8 emoji):
 
 ```
