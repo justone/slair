@@ -122,11 +122,11 @@ func (c Changer) Process() error {
 
 	fmt.Printf("Name found: %s %s\n", first, last)
 	if len(c.OldName) == 0 || (strings.Contains(first, c.OldName) || strings.Contains(last, c.OldName)) {
-		newLast := fmt.Sprintf("%s%s", c.Last, c.Flair())
+		newLast := fmt.Sprintf("%s%s", emoji.Sprint(c.Last), c.Flair())
 
 		fmt.Printf("Changing name to %s %s\n", c.First, newLast)
 
-		_, err := c.post("users.profile.set", url.Values{"name": {"first_name"}, "value": {c.First}})
+		_, err := c.post("users.profile.set", url.Values{"name": {"first_name"}, "value": {emoji.Sprint(c.First)}})
 		if err != nil {
 			return err
 		}

@@ -64,6 +64,12 @@ slair -f Jim -l Bob -c 15 -p single -e :boom:,:tada:
 slair -f Jim -l Bob -o James -c 15 -p 3pal -e boom,tada
 ```
 
+Emoji can be specified in first or last name too:
+
+```
+slair -f Jim -l "Bob :cloud:"
+```
+
 List out available emoji:
 
 ```
