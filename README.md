@@ -57,6 +57,19 @@ Possible values for `-p` are:
 * 'single': a single emoji picked from a list
 * '3pal': three emojis in a palindrome (e.g. 💥☁️💥)
 
+Specify a different set of emoji to pick from:
+
+```
+slair -f Jim -l Bob -c 15 -p single -e :boom:,:tada:
+slair -f Jim -l Bob -o James -c 15 -p 3pal -e boom,tada
+```
+
+List out available emoji:
+
+```
+slair --list-emojis
+```
+
 # License
 
 MIT

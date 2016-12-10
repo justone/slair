@@ -11,65 +11,102 @@ import (
 
 	jsontree "github.com/bmatsuo/go-jsontree"
 	flags "github.com/jessevdk/go-flags"
+	"gopkg.in/kyokomi/emoji.v1"
 )
 
-type Changer struct {
+var opts struct {
 	EmojiPattern string `short:"p" long:"emoji-pattern" description:"Add an emoji pattern after the new name"`
+	Emojis       string `short:"e" long:"emojis" description:"List of emojis to use when randomly selecting" default:":cloud:,:boom:,:tada:,:sunglasses:"`
+	ListEmojis   bool   `long:"list-emojis" description:"List all emojis"`
 	Continuously int64  `short:"c" long:"continuously" description:"Check and change name every N minutes" default:"0"`
 	OldName      string `short:"o" long:"old" description:"Old name to match on."`
-	First        string `short:"f" long:"first" description:"New first name to use" required:"true"`
-	Last         string `short:"l" long:"last" description:"New last name to use" required:"true"`
-	Token        string `short:"t" long:"token" description:"Slack Token" required:"true" env:"SLACK_TOKEN"`
+	First        string `short:"f" long:"first" description:"New first name to use"`
+	Last         string `short:"l" long:"last" description:"New last name to use"`
+	Token        string `short:"t" long:"token" description:"Slack Token" env:"SLACK_TOKEN"`
 }
 
-var emojis = []string{
-	"☁️",
-	"💥",
-	"🎉",
-	"😎",
-	"🕴",
+// Changer handles everything around changing the Slack profile.
+type Changer struct {
+	Emojis                                    []string
+	OldName, First, Last, Token, EmojiPattern string
 }
 
-var changer Changer
+// ParseEmojis takes a comma-delimited list of emoji identifiers and returns an
+// array of real emoji characters.
+func ParseEmojis(list string) ([]string, error) {
+	result := []string{}
+
+	rawList := strings.Split(list, ",")
+	for _, raw := range rawList {
+		raw = strings.TrimSpace(raw)
+		if raw[0:1] != ":" {
+			raw = fmt.Sprintf(":%s:", raw)
+		}
+		if _, ok := emoji.CodeMap()[raw]; !ok {
+			return []string{}, fmt.Errorf("Unable to resolve emoji for %s", raw)
+		}
+		result = append(result, emoji.Sprint(raw))
+	}
+
+	return result, nil
+}
 
 func main() {
 	rand.Seed(time.Now().Unix())
 
-	_, err := flags.Parse(&changer)
+	_, err := flags.Parse(&opts)
 	if err != nil {
 		return
 	}
 
-	// TODO: figure out how to allow emojis to be specified from CLI args
-	// fmt.Println(changer.Emojis)
-	// fmt.Println(len(changer.Emojis))
-	// for ind, val := range changer.Emojis {
-	// 	fmt.Printf("%d: %s\n", ind, val)
-	// }
-	// for i, w := 0, 0; i < len(changer.Emojis); i += w {
-	// 	runeValue, width := utf8.DecodeRuneInString(changer.Emojis[i:])
-	// 	fmt.Printf("%#U starts at byte position %d\n", runeValue, i)
-	// 	w = width
-	// }
+	if opts.ListEmojis {
+		for k := range emoji.CodeMap() {
+			fmt.Printf("%s => %s\n", k, emoji.Sprint(k))
+		}
+		return
+	}
+
+	if len(opts.Token) == 0 {
+		fmt.Println("error: no slack token found, use either env var or cli arg")
+		return
+	}
+
+	emojis, err := ParseEmojis(opts.Emojis)
+	if err != nil {
+		fmt.Printf("error: %s\n", err)
+		return
+	}
+
+	changer := Changer{
+		emojis,
+		opts.OldName,
+		opts.First,
+		opts.Last,
+		opts.Token,
+		opts.EmojiPattern,
+	}
 
 	for {
 		err = changer.Process()
 		if err != nil {
 			fmt.Printf("error: %s\n", err)
-			if changer.Continuously == 0 {
+			if opts.Continuously == 0 {
 				break
 			}
 		}
 
-		if changer.Continuously == 0 {
+		if opts.Continuously == 0 {
 			break
 		} else {
-			fmt.Printf("Sleeping for %d minutes...\n", changer.Continuously)
-			time.Sleep(time.Duration(changer.Continuously) * time.Minute)
+			fmt.Printf("Sleeping for %d minutes...\n", opts.Continuously)
+			time.Sleep(time.Duration(opts.Continuously) * time.Minute)
 		}
 	}
 }
 
+// Process takes care of updating the Slack profile.  If an old name is
+// specified, it must be present in the old profile name for the update to
+// occur.  If EmojiPattern is present, then flair will be added.
 func (c Changer) Process() error {
 
 	profile, err := c.post("users.profile.get", url.Values{})
@@ -85,7 +122,7 @@ func (c Changer) Process() error {
 
 	fmt.Printf("Name found: %s %s\n", first, last)
 	if len(c.OldName) == 0 || (strings.Contains(first, c.OldName) || strings.Contains(last, c.OldName)) {
-		newLast := fmt.Sprintf("%s%s", c.Last, c.Emoji())
+		newLast := fmt.Sprintf("%s%s", c.Last, c.Flair())
 
 		fmt.Printf("Changing name to %s %s\n", c.First, newLast)
 
@@ -104,19 +141,21 @@ func (c Changer) Process() error {
 	return nil
 }
 
-func (c Changer) Emoji() string {
+// Flair generates the pieces of flair.
+func (c Changer) Flair() string {
 	switch c.EmojiPattern {
 	case "single":
-		return fmt.Sprintf(" %s", emojis[rand.Intn(len(emojis))])
+		return fmt.Sprintf(" %s", c.Emojis[rand.Intn(len(c.Emojis))])
 	case "3pal":
-		in := rand.Intn(len(emojis))
-		in2 := rand.Intn(len(emojis))
-		return fmt.Sprintf(" %s %s %s", emojis[in], emojis[in2], emojis[in])
+		in := rand.Intn(len(c.Emojis))
+		in2 := rand.Intn(len(c.Emojis))
+		return fmt.Sprintf(" %s %s %s", c.Emojis[in], c.Emojis[in2], c.Emojis[in])
 	default:
 		return ""
 	}
 }
 
+// post makes the actual requests to the Slack API.
 func (c Changer) post(method string, params url.Values) (*jsontree.JsonTree, error) {
 	params["token"] = []string{c.Token}
 	resp, err := http.PostForm(fmt.Sprintf("https://slack.com/api/%s", method), params)
