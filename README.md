@@ -16,6 +16,8 @@ This repo is the result.
 go get github.com/justone/slair
 ```
 
+Or, download from the [releases page](https://github.com/justone/slair/releases).
+
 # Example usage
 
 Set Slack token via environment variable:
