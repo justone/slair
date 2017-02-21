@@ -1,6 +1,25 @@
 {
 	"comment": "",
 	"ignore": "test",
-	"package": [],
+	"package": [
+		{
+			"checksumSHA1": "jg7uvwtk8xji/RxJPJZjXxdaujw=",
+			"path": "github.com/bmatsuo/go-jsontree",
+			"revision": "8a1cc1e88d44390691f69163f6bc597aac267cc3",
+			"revisionTime": "2014-03-12T04:21:50Z"
+		},
+		{
+			"checksumSHA1": "HyzJVpU83/duL9rjkQ4fGE0cw5Q=",
+			"path": "github.com/jessevdk/go-flags",
+			"revision": "460c7bb0abd6e927f2767cadc91aa6ef776a98b4",
+			"revisionTime": "2017-02-12T22:02:46Z"
+		},
+		{
+			"checksumSHA1": "HR3Q6BhlMFpIfuzJlfod2NajYo0=",
+			"path": "gopkg.in/kyokomi/emoji.v1",
+			"revision": "7e06b236c489543f53868841f188a294e3383eab",
+			"revisionTime": "2016-11-23T14:43:55Z"
+		}
+	],
 	"rootPath": "github.com/justone/slair"
 }
