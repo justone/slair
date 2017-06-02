@@ -1,10 +1,19 @@
 #!/bin/bash
 
+ORG=justone
+NAME=slair
+ARCHS="darwin/amd64 linux/amd64 windows/amd64 linux/arm"
+
 set -ex
 
 if [[ ! $(type -P gox) ]]; then
     echo "Error: gox not found."
     echo "To fix: run 'go get github.com/mitchellh/gox', and/or add \$GOPATH/bin to \$PATH"
+    exit 1
+fi
+
+if [[ -z $GITHUB_TOKEN ]]; then
+    echo "Error: GITHUB_TOKEN not set."
     exit 1
 fi
 
@@ -30,17 +39,18 @@ git tag $VER
 echo "Building $VER"
 echo
 
-gox -ldflags "-X main.version=$VER" -osarch="darwin/amd64 linux/amd64 windows/amd64 linux/arm"
+rm -v ${NAME}_* || true
+gox -ldflags "-X main.version=$VER" -osarch="$ARCHS"
 
 echo "* " > desc
 echo "" >> desc
 
-echo "$ sha1sum slair_*" >> desc
-sha1sum slair_* >> desc
-echo "$ sha256sum slair_*" >> desc
-sha256sum slair_* >> desc
-echo "$ md5sum slair_*" >> desc
-md5sum slair_* >> desc
+echo "$ sha1sum ${NAME}_*" >> desc
+sha1sum ${NAME}_* >> desc
+echo "$ sha256sum ${NAME}_*" >> desc
+sha256sum ${NAME}_* >> desc
+echo "$ md5sum ${NAME}_*" >> desc
+md5sum ${NAME}_* >> desc
 
 vi desc
 
@@ -48,8 +58,7 @@ git push --tags
 
 sleep 2
 
-github-release release $PRE_ARG --user justone --repo slair --tag $VER --name $VER --description desc
-github-release upload --user justone --repo slair --tag $VER --name slair_darwin_amd64 --file slair_darwin_amd64
-github-release upload --user justone --repo slair --tag $VER --name slair_linux_amd64 --file slair_linux_amd64
-github-release upload --user justone --repo slair --tag $VER --name slair_linux_arm --file slair_linux_arm
-github-release upload --user justone --repo slair --tag $VER --name slair_windows_amd64.exe --file slair_windows_amd64.exe
+cat desc | github-release release $PRE_ARG --user ${ORG} --repo ${NAME} --tag $VER --name $VER --description -
+for file in ${NAME}_*; do
+    github-release upload --user ${ORG} --repo ${NAME} --tag $VER --name $file --file $file
+done
