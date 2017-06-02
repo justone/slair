@@ -13,7 +13,7 @@ This repo is the result.
 # Install
 
 ```
-go get github.com/justone/slair
+$ go get github.com/justone/slair
 ```
 
 Or, download from the [releases page](https://github.com/justone/slair/releases).
@@ -23,7 +23,7 @@ Or, download from the [releases page](https://github.com/justone/slair/releases)
 Set Slack token via environment variable:
 
 ```
-export SLACK_TOKEN=xoxp-zzzzzzzzzz-zzzzzzzzzz-zzzzzzzzzzz-zzzzzzzzzz
+$ export SLACK_TOKEN=xoxp-zzzzzzzzzz-zzzzzzzzzz-zzzzzzzzzzz-zzzzzzzzzz
 ```
 
 Alternatively, the slack token can be passed as an argument (`-t`).
@@ -31,27 +31,27 @@ Alternatively, the slack token can be passed as an argument (`-t`).
 Change your profile name (supports utf8 emoji):
 
 ```
-slair -f Jim -l Bob
-slair -f Jim -l "Bob ☁️"
+$ slair -f Jim -l Bob
+$ slair -f Jim -l "Bob ☁️"
 ```
 
 Set name only if a certain old name is found:
 
 ```
-slair -f Jim -l Bob -o James
+$ slair -f Jim -l Bob -o James
 ```
 
 Continuously correct the name every N minutes:
 
 ```
-slair -f Jim -l Bob -o James -c 15
+$ slair -f Jim -l Bob -o James -c 15
 ```
 
 Append some flair at the end:
 
 ```
-slair -f Jim -l Bob -c 15 -p single
-slair -f Jim -l Bob -o James -c 15 -p 3pal
+$ slair -f Jim -l Bob -c 15 -p single
+$ slair -f Jim -l Bob -o James -c 15 -p 3pal
 ```
 
 Possible values for `-p` are:
@@ -62,20 +62,28 @@ Possible values for `-p` are:
 Specify a different set of emoji to pick from:
 
 ```
-slair -f Jim -l Bob -c 15 -p single -e :boom:,:tada:
-slair -f Jim -l Bob -o James -c 15 -p 3pal -e boom,tada
+$ slair -f Jim -l Bob -c 15 -p single -e :boom:,:tada:
+$ slair -f Jim -l Bob -o James -c 15 -p 3pal -e boom,tada
 ```
 
 Emoji can be specified in first or last name too:
 
 ```
-slair -f Jim -l "Bob :cloud:"
+$ slair -f Jim -l "Bob :cloud:"
+```
+
+If permissions are correct, can update other users:
+
+```
+$ slair --lookup-user bob
+User id: UZZZZZZZZ
+$ slair -f Jim -l Bob -u UZZZZZZZZ
 ```
 
 List out available emoji:
 
 ```
-slair --list-emojis
+$ slair --list-emojis
 ```
 
 # License

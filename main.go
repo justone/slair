@@ -22,13 +22,15 @@ var opts struct {
 	OldName      string `short:"o" long:"old" description:"Old name to match on."`
 	First        string `short:"f" long:"first" description:"New first name to use"`
 	Last         string `short:"l" long:"last" description:"New last name to use"`
+	User         string `short:"u" long:"user" description:"User ID to query/update (optional, defaults to current user)"`
+	LookupUser   string `long:"user-lookup" description:"Look up User ID by username."`
 	Token        string `short:"t" long:"token" description:"Slack Token" env:"SLACK_TOKEN"`
 }
 
 // Changer handles everything around changing the Slack profile.
 type Changer struct {
-	Emojis                                    []string
-	OldName, First, Last, Token, EmojiPattern string
+	Emojis                                          []string
+	User, OldName, First, Last, Token, EmojiPattern string
 }
 
 // ParseEmojis takes a comma-delimited list of emoji identifiers and returns an
@@ -79,11 +81,23 @@ func main() {
 
 	changer := Changer{
 		emojis,
+		opts.User,
 		opts.OldName,
 		opts.First,
 		opts.Last,
 		opts.Token,
 		opts.EmojiPattern,
+	}
+
+	if len(opts.LookupUser) > 0 {
+		userID, err := lookupUserID(changer, opts.LookupUser)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println("User id:", userID)
+		return
 	}
 
 	for {
@@ -102,6 +116,38 @@ func main() {
 			time.Sleep(time.Duration(opts.Continuously) * time.Minute)
 		}
 	}
+}
+
+// lookupUserID will return the user id for the given user.
+func lookupUserID(c Changer, lookup string) (string, error) {
+	userList, err := c.post("users.list", url.Values{})
+	if err != nil {
+		return "", err
+	}
+
+	users := userList.Get("members")
+	count, err := users.Len()
+	if err != nil {
+		return "", err
+	}
+
+	for i := 0; i < count; i++ {
+		user := users.GetIndex(i)
+		username, err := user.Get("name").String()
+		if err != nil {
+			return "", err
+		}
+
+		if username == opts.LookupUser {
+			id, err := user.Get("id").String()
+			if err != nil {
+				return "", err
+			}
+			return id, nil
+		}
+	}
+
+	return "", fmt.Errorf("Not found")
 }
 
 // Process takes care of updating the Slack profile.  If an old name is
@@ -158,6 +204,9 @@ func (c Changer) Flair() string {
 // post makes the actual requests to the Slack API.
 func (c Changer) post(method string, params url.Values) (*jsontree.JsonTree, error) {
 	params["token"] = []string{c.Token}
+	if len(c.User) > 0 {
+		params["user"] = []string{c.User}
+	}
 	resp, err := http.PostForm(fmt.Sprintf("https://slack.com/api/%s", method), params)
 	if err != nil {
 		return nil, err
