@@ -9,10 +9,36 @@
 			"revisionTime": "2014-03-12T04:21:50Z"
 		},
 		{
+			"checksumSHA1": "OFu4xJEIjiI8Suu+j/gabfp+y6Q=",
+			"origin": "github.com/stretchr/testify/vendor/github.com/davecgh/go-spew/spew",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "f6abca593680b2315d2075e0f5e2a9751e3f431a",
+			"revisionTime": "2017-06-01T20:57:54Z"
+		},
+		{
 			"checksumSHA1": "HyzJVpU83/duL9rjkQ4fGE0cw5Q=",
 			"path": "github.com/jessevdk/go-flags",
 			"revision": "460c7bb0abd6e927f2767cadc91aa6ef776a98b4",
 			"revisionTime": "2017-02-12T22:02:46Z"
+		},
+		{
+			"checksumSHA1": "5nbBYX52QEwtvGmxVyd3JwhOH30=",
+			"path": "github.com/justone/simpleslack",
+			"revision": "01cb0bb2098fdd77675f70632133a124ddf3ce7b",
+			"revisionTime": "2017-10-01T22:09:09Z"
+		},
+		{
+			"checksumSHA1": "zKKp5SZ3d3ycKe4EKMNT0BqAWBw=",
+			"origin": "github.com/stretchr/testify/vendor/github.com/pmezard/go-difflib/difflib",
+			"path": "github.com/pmezard/go-difflib/difflib",
+			"revision": "f6abca593680b2315d2075e0f5e2a9751e3f431a",
+			"revisionTime": "2017-06-01T20:57:54Z"
+		},
+		{
+			"checksumSHA1": "5NBHAe3S15q3L9hOLThnMZjIZRE=",
+			"path": "github.com/stretchr/testify/assert",
+			"revision": "f6abca593680b2315d2075e0f5e2a9751e3f431a",
+			"revisionTime": "2017-06-01T20:57:54Z"
 		},
 		{
 			"checksumSHA1": "HR3Q6BhlMFpIfuzJlfod2NajYo0=",

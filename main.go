@@ -2,15 +2,14 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"math/rand"
-	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
 	jsontree "github.com/bmatsuo/go-jsontree"
 	flags "github.com/jessevdk/go-flags"
+	"github.com/justone/simpleslack"
 	"gopkg.in/kyokomi/emoji.v1"
 )
 
@@ -29,8 +28,9 @@ var opts struct {
 
 // Changer handles everything around changing the Slack profile.
 type Changer struct {
-	Emojis                                          []string
-	User, OldName, First, Last, Token, EmojiPattern string
+	SlackClient                              simpleslack.Client
+	Emojis                                   []string
+	User, OldName, First, Last, EmojiPattern string
 }
 
 // ParseEmojis takes a comma-delimited list of emoji identifiers and returns an
@@ -80,12 +80,12 @@ func main() {
 	}
 
 	changer := Changer{
+		simpleslack.Client{opts.Token},
 		emojis,
 		opts.User,
 		opts.OldName,
 		opts.First,
 		opts.Last,
-		opts.Token,
 		opts.EmojiPattern,
 	}
 
@@ -203,33 +203,8 @@ func (c Changer) Flair() string {
 
 // post makes the actual requests to the Slack API.
 func (c Changer) post(method string, params url.Values) (*jsontree.JsonTree, error) {
-	params["token"] = []string{c.Token}
 	if len(c.User) > 0 {
 		params["user"] = []string{c.User}
 	}
-	resp, err := http.PostForm(fmt.Sprintf("https://slack.com/api/%s", method), params)
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-
-	tree := jsontree.New()
-	err = tree.UnmarshalJSON(body)
-	if err != nil {
-		return nil, err
-	}
-
-	ok, err := tree.Get("ok").Boolean()
-	if err != nil {
-		return nil, err
-	}
-
-	if !ok {
-		message, _ := tree.Get("error").String()
-		return nil, fmt.Errorf("Error: %s", message)
-	}
-
-	return tree, nil
+	return c.SlackClient.Post(method, params)
 }
